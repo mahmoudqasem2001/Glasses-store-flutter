@@ -46,7 +46,7 @@ Follow these instructions to get a copy of the project up and running on your lo
 1. Clone the repository:
 
 ```
-git clone https://github.com/mahmoudqasem2001/AR_GlassesStore.git
+git clone https://github.com/mahmoudqasem2001/Glasses-store-flutter.git
 ```
 
 2. Set up the Flutter environment by following the official [Flutter installation guide](https://flutter.dev/docs/get-started/install).
