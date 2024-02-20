@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../providers/auth.dart';
-import '../../../providers/cart_provider.dart';
-import '../../../providers/products_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_app/cubits/cart_cubit.dart';
+import 'package:shop_app/providers/auth.dart';
+import 'package:shop_app/providers/products_provider.dart';
 
 class CartItem extends StatelessWidget {
   final String? id;
@@ -11,16 +11,22 @@ class CartItem extends StatelessWidget {
   final int? quantity;
   final String? title;
 
-  const CartItem(this.id, this.productId, this.price, this.quantity, this.title,
-      {Key? key})
-      : super(key: key);
+  const CartItem(
+    this.id,
+    this.productId,
+    this.price,
+    this.quantity,
+    this.title, {
+    Key? key,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<Auth>(context, listen: false);
-    final cartProvider = Provider.of<Cart>(context, listen: false);
-    final imageIrl = Provider.of<Products>(context, listen: false)
-        .findById(productId!)
-        .imageUrls![0];
+    final authProvider = context.read<Auth>();
+    final cartCubit = context.read<CartCubit>();
+    final imageUrl = context.select(
+        (Products products) => products.findById(productId!).imageUrls?[0]);
+
     return Dismissible(
       background: Container(
         color: Theme.of(context).colorScheme.error,
@@ -45,28 +51,30 @@ class CartItem extends StatelessWidget {
           builder: (ctx) => AlertDialog(
             backgroundColor: Theme.of(context).colorScheme.secondary,
             title: const Text('Are you sure?'),
-            content: const Text('Do you to remove  item from the cart?'),
+            content: const Text('Do you to remove item from the cart?'),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('No')),
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('No'),
+              ),
               TextButton(
-                  onPressed: () => Navigator.of(context).pop(true),
-                  child: const Text('Yes')),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Yes'),
+              ),
             ],
           ),
         );
       },
       onDismissed: (direction) {
         if (authProvider.authenticated == true) {
-          cartProvider.removeFromCartRequest(productId!);
+          cartCubit.removeItem(productId!);
         } else {
-          cartProvider.removeItem(productId!);
+          cartCubit.removeItem(productId!);
         }
       },
       key: ValueKey(id),
-      child: Consumer<Cart>(
-        builder: (ctx, cartItem, _) {
+      child: BlocBuilder<CartCubit, List<CartItem>>(
+        builder: (context, state) {
           return Card(
             margin: const EdgeInsets.symmetric(
               horizontal: 15,
@@ -77,7 +85,11 @@ class CartItem extends StatelessWidget {
               child: ListTile(
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(25.0),
-                  child: Image.network(imageIrl,height: 70, width: 120,),
+                  child: Image.network(
+                    imageUrl ?? '',
+                    height: 70,
+                    width: 120,
+                  ),
                 ),
                 title: Text(title!),
                 subtitle: Column(

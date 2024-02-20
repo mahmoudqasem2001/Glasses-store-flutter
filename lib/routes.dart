@@ -20,7 +20,7 @@ Map<String, WidgetBuilder> routes() {
   return {
     ProductOverViewScreen.routeName: (_) => const ProductOverViewScreen(),
     ProductDetailScreen.routeName: (_) => const ProductDetailScreen(),
-    CartScreen.routeName: (_) => const CartScreen(),
+    CartScreen.routeName: (_) =>  CartScreen(),
     OrdersScreen.routeName: (_) => const OrdersScreen(),
     StoreAccountScreen.routeName: (_) => const StoreAccountScreen(),
     EditProductScreen.routeName: (_) => const EditProductScreen(),

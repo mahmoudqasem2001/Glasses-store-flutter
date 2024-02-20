@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_app/cubits/favorites_cubit.dart';
 import 'package:shop_app/providers/auth.dart';
 import 'package:shop_app/providers/cart_provider.dart';
 import 'package:shop_app/providers/orders_provider.dart';
@@ -53,7 +55,9 @@ class MyApp extends StatelessWidget {
               iconTheme: IconThemeData(color: Colors.black),
             ),
           ),
-          home: const HomeScreen(),
+          home: BlocProvider(
+            create: (context)=> FavoritesCubit(),
+            child: const HomeScreen()),
           routes: routes(),
         ),
       ),

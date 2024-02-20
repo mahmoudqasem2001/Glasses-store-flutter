@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
     List screens = [
       const ProductOverViewScreen(),
       FavoritesPage(),
-      const CartScreen(),
+      CartScreen(),
       const ProfileScreen(),
     ];
     return Scaffold(

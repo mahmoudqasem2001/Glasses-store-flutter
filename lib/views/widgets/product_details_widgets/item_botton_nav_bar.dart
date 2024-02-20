@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import '../../../cubits/cart_cubit.dart';
+import '../../../models/cart_item.dart';
 import '../../../providers/auth.dart';
-import '../../../providers/cart_provider.dart';
 import '../../../providers/products_provider.dart';
 
 class ItemBottomNavBar extends StatelessWidget {
@@ -12,7 +14,6 @@ class ItemBottomNavBar extends StatelessWidget {
     final productId = ModalRoute.of(context)!.settings.arguments!;
     final loadedProduct = Provider.of<Products>(context, listen: false)
         .findById(productId as int);
-    final cartProvider = Provider.of<Cart>(context, listen: false);
     var productsProvider = Provider.of<Products>(context, listen: false);
     return BottomAppBar(
       child: Container(
@@ -47,10 +48,6 @@ class ItemBottomNavBar extends StatelessWidget {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
-                      // const SizedBox(
-                      //   height: 0,
-                      // ),
-                      // const Icon(Icons.camera_alt)
                     ],
                   ),
                 ),
@@ -71,23 +68,17 @@ class ItemBottomNavBar extends StatelessWidget {
                     authProvider
                         .fetchCustomerAccountInfo()
                         .then((value) => authProvider.setAuthentucated(value));
-                    if (authProvider.authenticated == true) {
-                      cartProvider.addToCartRequest(
-                        loadedProduct.id!,
-                        productsProvider.productQuantity,
-                        loadedProduct.price!,
-                        loadedProduct.brand!.name!,
-                      );
-                    } else {
-                      cartProvider.addItem(
-                          productId,
-                          loadedProduct.price,
-                          loadedProduct.brand!.name,
-                          productsProvider.productQuantity);
-                    }
+                    final cartCubit = context.read<CartCubit>();
+                    cartCubit.addItem(CartItem(
+                      id: loadedProduct.id.toString(),
+                      productId: loadedProduct.id!,
+                      price: loadedProduct.price,
+                      quantity: productsProvider.productQuantity,
+                      title: loadedProduct.brand!.name,
+                    ));
                     productsProvider.setProductQuantity(0);
                   },
-                  child:const Column(
+                  child: Column(
                     children: [
                       Text(
                         'Add To Cart',

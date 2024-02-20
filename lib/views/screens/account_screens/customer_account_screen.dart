@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../providers/auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_app/providers/auth.dart';
+import '../../../cubits/auth_cubit.dart';
 
-class CustomerAccountScreen extends StatefulWidget {
+class CustomerAccountScreen extends StatelessWidget {
   static const routeName = '/customer-account';
 
-  const CustomerAccountScreen({Key? key}) : super(key: key);
-
-  @override
-  _CustomerAccountScreenState createState() => _CustomerAccountScreenState();
-}
-
-class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,55 +13,57 @@ class _CustomerAccountScreenState extends State<CustomerAccountScreen> {
       appBar: AppBar(
         title: Text('My Account'),
       ),
-      body: Consumer<Auth>(builder: (context, auth, _) {
-        final customerResponseData = auth.customer;
-        if (customerResponseData.name == null) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(
-                    child: Column(children: [
-                      Text(
-                        'Profile',
-                        style: TextStyle(fontSize: 30),
-                      ),
-                      SizedBox(
-                        height: 115,
-                        width: 115,
-                        child: CircleAvatar(
-                          backgroundImage: AssetImage(
-                            'assets/images/profile.png',
+      body: BlocBuilder<AuthCubit,Auth >(
+        builder: (context, auth) {
+          if (auth.customer.name == null) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Center(
+                      child: Column(children: [
+                        Text(
+                          'Profile',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        SizedBox(
+                          height: 115,
+                          width: 115,
+                          child: CircleAvatar(
+                            backgroundImage: AssetImage(
+                              'assets/images/profile.png',
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        height: 30,
-                      ),
-                    ]),
-                  ),
-                  _buildAccountInfo('Name:', customerResponseData.name),
-                  _buildAccountInfo(
-                      'Phone Number:', customerResponseData.phoneNumber),
-                  _buildAccountInfo('Gender:', customerResponseData.gender),
-                  _buildAccountInfo(
-                      'Country:', customerResponseData.address?.country),
-                  _buildAccountInfo('City:', customerResponseData.address?.city),
-                  _buildAccountInfo(
-                      'City:', customerResponseData.address?.street),
-                  _buildAccountInfo('ZIP:', customerResponseData.address?.zip),
-                ],
+                        SizedBox(
+                          height: 30,
+                        ),
+                      ]),
+                    ),
+                    _buildAccountInfo('Name:', auth.customer.name),
+                    _buildAccountInfo(
+                        'Phone Number:', auth.customer.phoneNumber),
+                    _buildAccountInfo('Gender:', auth.customer.gender),
+                    _buildAccountInfo(
+                        'Country:', auth.customer.address?.country),
+                    _buildAccountInfo(
+                        'City:', auth.customer.address?.city),
+                    _buildAccountInfo(
+                        'City:', auth.customer.address?.street),
+                    _buildAccountInfo('ZIP:', auth.customer.address?.zip),
+                  ],
+                ),
               ),
-            ),
-          );
-        }
-      }),
+            );
+          }
+        },
+      ),
     );
   }
 
